@@ -3,9 +3,9 @@ package com.example.yadrotestovoe.presentation.screens.contactsScreen.composable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,30 +53,38 @@ fun SuccessContactsScreen(
     LazyColumn {
         groupedContacts.forEach { (initial, contactsInGroup) ->
             item {
-                Text(
-                    text = initial.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .background(Color.LightGray)
-                        .padding(8.dp)
-                )
+                Column {
+                    HorizontalDivider(
+                        color = Color.Blue, thickness = 1.dp, modifier =
+                            Modifier.padding(top = 8.dp)
+                    )
+                    Text(
+                        text = initial.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                    HorizontalDivider(
+                        color = Color.Blue, thickness = 1.dp, modifier =
+                            Modifier.padding(bottom = 8.dp)
+                    )
+                }
             }
             items(contactsInGroup) { contact ->
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 2.dp)
-                    .clickable {
-                        contactsViewModel.onContactPressed(
-                            context = context,
-                            contact = contact,
-                            requestPermissionLauncher,
-                            error = errorNumber
-                        )
-                    }
-                    .border(BorderStroke(1.dp, Color.Black))
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 2.dp)
+                        .clickable {
+                            contactsViewModel.onContactPressed(
+                                context = context,
+                                contact = contact,
+                                requestPermissionLauncher,
+                                error = errorNumber
+                            )
+                        }
+                        .border(BorderStroke(1.dp, Color.Blue))
                 ) {
                     if(contact.thumbnailUri != null){
                         AsyncImage(

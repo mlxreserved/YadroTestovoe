@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsListScreen
 import com.example.yadrotestovoe.presentation.ui.theme.YadroTestovoeTheme
+import com.example.yadrotestovoe.R
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 }
             } else {
                 // Разрешение отклонено, нужно отобразить пользователю соответствующее сообщение
-                Toast.makeText(this, "Contact permission is required to use this feature.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.error_contacts_permission), Toast.LENGTH_SHORT).show()
             }
         }
 

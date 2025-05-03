@@ -4,4 +4,5 @@
     <string name="empty_name">Нет имени</string>
     <string name="error_empty_number">Невозможно позвонить. У пользователя не указан номер</string>
     <string name="error_call_permission">Для совершения звонков нужно разрешение</string>
+    <string name="error_contacts_permission">Для работы с приложением нужен доступ к контактам</string>
 </resources>
