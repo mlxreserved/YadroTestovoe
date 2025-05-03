@@ -1,4 +1,4 @@
-package com.example.yadrotestovoe.presentation.screens.contactsScreen.composable.success
+package com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

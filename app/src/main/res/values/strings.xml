@@ -5,4 +5,6 @@
     <string name="error_empty_number">Невозможно позвонить. У пользователя не указан номер</string>
     <string name="error_call_permission">Для совершения звонков нужно разрешение</string>
     <string name="error_contacts_permission">Для работы с приложением нужен доступ к контактам</string>
+    <string name="error_load_contacts">Произошла ошибка при загрузке контактов</string>
+    <string name="empty_notify">У вас нет контактов для отображения.</string>
 </resources>
