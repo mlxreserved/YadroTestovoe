@@ -6,7 +6,6 @@ import com.example.yadrotestovoe.data.contact.local.repository.ContactLocalRepos
 import com.example.yadrotestovoe.data.contact.local.source.ContactContentDataSource
 import com.example.yadrotestovoe.data.contact.local.source.ContactLocalDataSource
 import com.example.yadrotestovoe.domain.repository.ContactLocalRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

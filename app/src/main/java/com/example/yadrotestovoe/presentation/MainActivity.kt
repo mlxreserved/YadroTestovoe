@@ -1,7 +1,6 @@
 package com.example.yadrotestovoe.presentation
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -11,14 +10,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.core.content.ContextCompat
-import com.example.yadrotestovoe.data.contact.local.repository.ContactLocalRepositoryImpl
+import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsListScreen
 import com.example.yadrotestovoe.presentation.ui.theme.YadroTestovoeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     YadroTestovoeTheme {
                         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                            ContactsListScreen(modifier = Modifier.padding(innerPadding))
                         }
                     }
                 }
@@ -54,6 +56,7 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     YadroTestovoeTheme {
                         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                            ContactsListScreen(modifier = Modifier.padding(innerPadding))
                         }
                     }
                 }

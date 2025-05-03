@@ -8,5 +8,6 @@ fun mapContactLocalToContact(contactLocal: ContactLocal): Contact =
         id = contactLocal.id,
         name = contactLocal.name,
         phoneNumber = contactLocal.phoneNumber,
-        thumbnailUri = contactLocal.thumbnailUri
+        thumbnailUri = contactLocal.thumbnailUri,
+        phoneType = contactLocal.phoneType
     )

@@ -5,6 +5,6 @@ import com.example.yadrotestovoe.data.contact.local.model.ContactLocal
 interface ContactLocalDataSource {
 
     // Получение локальных контактов
-    fun getLocalContacts(): List<ContactLocal>
+    suspend fun getLocalContacts(): List<ContactLocal>
 
 }

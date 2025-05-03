@@ -4,10 +4,10 @@ import com.example.yadrotestovoe.domain.model.Contact
 import com.example.yadrotestovoe.domain.repository.ContactLocalRepository
 import javax.inject.Inject
 
-class GetLocalLocalContactsUseCaseImpl @Inject constructor(
+class GetLocalContactsUseCaseImpl @Inject constructor(
     private val contactLocalRepository: ContactLocalRepository
 ) : GetLocalContactsUseCase {
 
-    override operator fun invoke(): List<Contact> = contactLocalRepository.getContacts()
+    override suspend operator fun invoke(): List<Contact> = contactLocalRepository.getContacts()
 
 }

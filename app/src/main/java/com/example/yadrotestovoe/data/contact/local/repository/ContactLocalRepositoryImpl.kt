@@ -9,7 +9,7 @@ class ContactLocalRepositoryImpl(private val dataSource: ContactLocalDataSource)
     ContactLocalRepository {
 
     // Получаем локальные контакты и преобразуем их в domain-модель
-    override fun getContacts(): List<Contact> = dataSource.getLocalContacts().map { contactLocal ->
+    override suspend fun getContacts(): List<Contact> = dataSource.getLocalContacts().map { contactLocal ->
         mapContactLocalToContact(contactLocal)
     }
 

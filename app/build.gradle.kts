@@ -47,6 +47,10 @@ dependencies {
     ksp(libs.google.hilt.compiler)
     implementation(libs.google.hilt.navigation.compose)
 
+    //Coil
+    implementation(libs.io.coil.compose)
+    implementation(libs.io.coil.network)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

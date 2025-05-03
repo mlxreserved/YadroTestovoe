@@ -4,21 +4,19 @@ import android.content.ContentResolver
 import android.provider.ContactsContract
 import com.example.yadrotestovoe.data.contact.local.model.ContactLocal
 import com.example.yadrotestovoe.data.contact.local.util.Projections
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ContactContentDataSource(private val contentResolver: ContentResolver) :
     ContactLocalDataSource {
 
-    override fun getLocalContacts(): List<ContactLocal> {
+    override suspend  fun getLocalContacts(): List<ContactLocal> = withContext(Dispatchers.IO){
         val localContacts = mutableListOf<ContactLocal>()
 
         // Курсор для обращения к таблице с ID, именем и путем до фото пользователя
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
-            arrayOf(
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
-            ),
+            Projections.ContactInfo,
             null,
             null,
             null
@@ -29,31 +27,33 @@ class ContactContentDataSource(private val contentResolver: ContentResolver) :
                 val contactId = it.getLong(it.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
                 val name =
                     it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-                val primaryPhoneNumber =
-                    getPrimaryNumberFromContacts(contentResolver, contactId.toString())
+                val (primaryPhoneNumber, typePhoneNumber) =
+                    getPrimaryNumberAndTypeFromContacts(contentResolver, contactId.toString())
                 val thumbnailUri =
                     it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+
 
                 localContacts.add(
                     ContactLocal(
                         id = contactId,
                         name = name,
                         phoneNumber = primaryPhoneNumber,
-                        thumbnailUri = thumbnailUri
+                        thumbnailUri = thumbnailUri,
+                        phoneType = typePhoneNumber
                     )
                 )
             }
         }
 
-        return localContacts
+        localContacts
     }
 
 
     // Функция для получения основного номера, который помечен Default
-    private fun getPrimaryNumberFromContacts(
+    private fun getPrimaryNumberAndTypeFromContacts(
         contentResolver: ContentResolver,
         contactId: String
-    ): String? {
+    ): Pair<String?, Int?> {
 
         // Курсор для обращения к таблице с номерами телефонов
         val phoneCursor = contentResolver.query(
@@ -66,6 +66,7 @@ class ContactContentDataSource(private val contentResolver: ContentResolver) :
 
         phoneCursor?.use { cursor ->
             var fallbackNumber: String? = null
+            var fallbackType: Int? = null
             while (cursor.moveToNext()) {
                 val number = cursor.getString(
                     cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
@@ -73,16 +74,20 @@ class ContactContentDataSource(private val contentResolver: ContentResolver) :
                 val isPrimary = cursor.getInt(
                     cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY)
                 )
+                val typeInt = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE)
+                )
                 if (isPrimary > 0) {
-                    return number  // нашли основной номер — возвращаем сразу
+                    return Pair(number, typeInt) // нашли основной номер — возвращаем сразу
                 }
                 if (fallbackNumber == null) {
                     fallbackNumber = number  // запомним первый найденный номер
+                    fallbackType = typeInt
                 }
             }
-            return fallbackNumber  // если основного не нашли, вернём первый попавшийся
+            return Pair(fallbackNumber, fallbackType)  // если основного не нашли, вернём первый попавшийся
         }
-        return null // Если нет ни одного номера, то возвращаем Null
+        return Pair(null, null) // Если нет ни одного номера, то возвращаем Null
     }
 
 

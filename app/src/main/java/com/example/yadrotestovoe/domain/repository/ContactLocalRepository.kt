@@ -4,6 +4,6 @@ import com.example.yadrotestovoe.domain.model.Contact
 
 interface ContactLocalRepository {
 
-    fun getContacts() : List<Contact>
+    suspend fun getContacts() : List<Contact>
 
 }
