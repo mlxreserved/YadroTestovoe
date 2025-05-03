@@ -20,12 +20,22 @@ fun ContactInfo(
     context: Context,
     contact: Contact
 ) {
+    /*
+        Преобразование типа номера в читабельный вид, например:
+        1 - Домашний
+        2 - Мобильный
+        3 - Рабочий
+        и т.д.
+     */
     val typeLabel = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
         context.resources,
         contact.phoneType ?: 0,
         ""
     ).toString()
-    val phoneNumberWithLabel = if(contact.phoneNumber != null) "${contact.phoneNumber} ($typeLabel)" else stringResource(R.string.empty_number)
+
+    // Приводим номер и тип номера в удобный формат
+    val phoneNumberWithLabel =
+        if (contact.phoneNumber != null) "${contact.phoneNumber} ($typeLabel)" else stringResource(R.string.empty_number)
 
     Column {
         Text(

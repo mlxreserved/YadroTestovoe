@@ -10,7 +10,8 @@ import kotlinx.coroutines.withContext
 class ContactContentDataSource(private val contentResolver: ContentResolver) :
     ContactLocalDataSource {
 
-    override suspend  fun getLocalContacts(): List<ContactLocal> = withContext(Dispatchers.IO){
+    // Основная функция для получения контактов
+    override suspend fun getLocalContacts(): List<ContactLocal> = withContext(Dispatchers.IO) {
         val localContacts = mutableListOf<ContactLocal>()
 
         // Курсор для обращения к таблице с ID, именем и путем до фото пользователя
@@ -68,12 +69,15 @@ class ContactContentDataSource(private val contentResolver: ContentResolver) :
             var fallbackNumber: String? = null
             var fallbackType: Int? = null
             while (cursor.moveToNext()) {
+                // Номер телефона
                 val number = cursor.getString(
                     cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
                 )
+                // Является основным или нет
                 val isPrimary = cursor.getInt(
                     cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY)
                 )
+                // Тип номера
                 val typeInt = cursor.getInt(
                     cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE)
                 )
@@ -82,10 +86,13 @@ class ContactContentDataSource(private val contentResolver: ContentResolver) :
                 }
                 if (fallbackNumber == null) {
                     fallbackNumber = number  // запомним первый найденный номер
-                    fallbackType = typeInt
+                    fallbackType = typeInt // запомним тип первого найденного номера
                 }
             }
-            return Pair(fallbackNumber, fallbackType)  // если основного не нашли, вернём первый попавшийся
+            return Pair(
+                fallbackNumber,
+                fallbackType
+            )  // если основной не нашли, вернём первый попавшийся
         }
         return Pair(null, null) // Если нет ни одного номера, то возвращаем Null
     }

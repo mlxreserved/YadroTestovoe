@@ -25,8 +25,10 @@ class ContactsViewModel @Inject constructor(
     private val getLocalContactsUseCase: GetLocalContactsUseCase
 ) : ViewModel() {
 
+    // Инкапсуляция состояния приложения
     private val _contactsState: MutableStateFlow<ContactsScreenState> =
         MutableStateFlow(ContactsScreenState.Loading)
+    // Доступное к чтению состояние приложения
     val contactsState: StateFlow<ContactsScreenState> = _contactsState.asStateFlow()
 
     private var lastSelectedContact: Contact? = null
@@ -35,29 +37,33 @@ class ContactsViewModel @Inject constructor(
         loadContacts()
     }
 
+    // Загрузка контактов
     private fun loadContacts() {
         viewModelScope.launch {
             _contactsState.update { ContactsScreenState.Loading }
             try {
                 val localContacts = getLocalContactsUseCase()
+
                 if (localContacts.isEmpty()) {
                     _contactsState.update { ContactsScreenState.Empty }
                 } else {
                     val groupedContacts: Map<Char, List<Contact>> = localContacts
-                        .groupBy { it.name?.firstOrNull()?.uppercaseChar() ?: '#' }
+                        .groupBy { it.name?.firstOrNull()?.uppercaseChar() ?: SIGN_UNNAMED_CONTACT }
                         .toSortedMap()
                     _contactsState.update { ContactsScreenState.Success(groupedContacts) }
                 }
+
             } catch (e: Exception) {
                 _contactsState.update {
                     ContactsScreenState.Error(
-                        e.message ?: "Неизвестная ошибка"
+                        e.message ?: UNKNOWN_ERROR
                     )
                 }
             }
         }
     }
 
+    // Реакция на нажатие кнопки
     fun onContactPressed(
         context: Context,
         contact: Contact,
@@ -65,6 +71,8 @@ class ContactsViewModel @Inject constructor(
         error: String
     ) {
         lastSelectedContact = contact
+
+        // Если номер не пустой, то запрашиваем разрешение на звонок
         if (contact.phoneNumber != null) {
             if (ContextCompat.checkSelfPermission(
                     context,
@@ -80,8 +88,10 @@ class ContactsViewModel @Inject constructor(
         } else {
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
         }
+
     }
 
+    // Обработка результата запроса разрешения
     fun handlePermissionResult(context: Context, error: String, isGranted: Boolean) {
         if (isGranted && lastSelectedContact?.phoneNumber != null) {
             startCall(context, lastSelectedContact!!.phoneNumber!!)
@@ -91,11 +101,20 @@ class ContactsViewModel @Inject constructor(
         }
     }
 
+
+    // Создание намерения и запуск звонка
     private fun startCall(context: Context, phoneNumber: String) {
         val callIntent = Intent(Intent.ACTION_CALL).apply {
             data = ("tel:$phoneNumber").toUri()
         }
         context.startActivity(callIntent)
+    }
+
+    companion object {
+        // Константа для неизвестной ошибки
+        private const val UNKNOWN_ERROR = "Неизвестная ошибка"
+        // Константа знака для контактов, у которых нет имени
+        private const val SIGN_UNNAMED_CONTACT = '#'
     }
 
 }
