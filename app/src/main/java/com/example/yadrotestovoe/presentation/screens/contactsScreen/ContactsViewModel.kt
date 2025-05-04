@@ -11,7 +11,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yadrotestovoe.domain.model.Contact
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCase
+import com.example.yadrotestovoe.domain.usecase.inter.GetLocalContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

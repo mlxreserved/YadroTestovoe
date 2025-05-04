@@ -8,6 +8,7 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,19 +29,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private var deleteDuplicateContacts: DeleteDuplicateContacts? = null
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            deleteDuplicateContacts = DeleteDuplicateContacts.Stub.asInterface(service)
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            deleteDuplicateContacts = null
-        }
-
-    }
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -69,20 +57,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             YadroTestovoeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ContactsListScreen(deleteDuplicateContacts = deleteDuplicateContacts, modifier = Modifier.padding(innerPadding))
+                    ContactsListScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        bindService(createExplicitIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        unbindService(serviceConnection)
     }
 
     private fun checkAndRequestContactPermission() {
@@ -94,20 +72,4 @@ class MainActivity : ComponentActivity() {
             requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         }
     }
-
-    private fun createExplicitIntent(): Intent {
-        val intent = Intent("com.example.aidl.REMOTE_CONNECTION")
-        val services = packageManager.queryIntentServices(intent, 0)
-        if (services.isEmpty()) {
-            throw IllegalStateException("Приложение-сервер не установлено")
-        }
-        return Intent(intent).apply {
-            val resolveInfo = services[0]
-            val packageName = resolveInfo.serviceInfo.packageName
-            val className = resolveInfo.serviceInfo.name
-            component = ComponentName(packageName, className)
-        }
-    }
-
-
 }

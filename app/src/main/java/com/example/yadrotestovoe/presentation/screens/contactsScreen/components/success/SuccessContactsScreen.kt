@@ -17,12 +17,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.example.aidl.AsyncCallback
 import com.example.aidl.CustomAidlException
@@ -30,11 +34,12 @@ import com.example.aidl.DeleteDuplicateContacts
 import com.example.yadrotestovoe.R
 import com.example.yadrotestovoe.domain.model.Contact
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsViewModel
+import com.example.yadrotestovoe.presentation.screens.contactsScreen.DuplicatesViewModel
 
 
 @Composable
 fun SuccessContactsScreen(
-    deleteDuplicateContacts: DeleteDuplicateContacts?,
+    duplicatesViewModel: DuplicatesViewModel = hiltViewModel(),
     groupedContacts: Map<Char, List<Contact>>,
     contactsViewModel: ContactsViewModel,
     modifier: Modifier = Modifier
@@ -52,27 +57,34 @@ fun SuccessContactsScreen(
 
     Column {
         // Отображение списка контактов
-
-        Button(
-            onClick = {
-                deleteDuplicateContacts?.deleteDuplicateContacts(object : AsyncCallback.Stub() {
-                    override fun onSuccess(successMessage: String?) {
-                        Log.d("SUCCESS", successMessage.toString())
+        LazyColumn {
+            groupedContacts.forEach { (initial, contactsInGroup) ->
+                item {
+                    ContactFirstLetter(initial = initial)
+                }
+                items(contactsInGroup) { contact ->
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 2.dp)
+                            .clickable {
+                                contactsViewModel.onContactPressed(
+                                    context = context,
+                                    contact = contact,
+                                    requestPermissionLauncher,
+                                    error = errorNumber
+                                )
+                            }
+                            .border(BorderStroke(1.dp, Color.Blue))
+                    ) {
+                        ContactThumbnail(thumbnailUri = contact.thumbnailUri)
+                        ContactInfo(context = context, contact = contact)
                     }
-
-                    override fun onEmpty(emptyMessage: String?) {
-                        Log.d("EMPTY", emptyMessage.toString())
-
-                        Toast.makeText(context, emptyMessage, Toast.LENGTH_SHORT).show()
-                    }
-
-                    override fun onError(customAidlException: CustomAidlException?) {
-                        Log.d("ERROR", customAidlException.toString())
-
-                        Toast.makeText(context, customAidlException.toString(), Toast.LENGTH_SHORT).show()
-                    }
-                })
+                }
             }
+        }
+        Button(
+            onClick = { duplicatesViewModel.deleteDuplicates() }
         ){
             Text(text = "Click me")
         }

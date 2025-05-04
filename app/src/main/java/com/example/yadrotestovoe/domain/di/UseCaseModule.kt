@@ -1,7 +1,7 @@
 package com.example.yadrotestovoe.domain.di
 
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCase
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCaseImpl
+import com.example.yadrotestovoe.domain.usecase.inter.GetLocalContactsUseCase
+import com.example.yadrotestovoe.domain.usecase.impl.GetLocalContactsUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

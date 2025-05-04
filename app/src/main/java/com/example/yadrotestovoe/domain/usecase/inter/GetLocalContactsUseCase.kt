@@ -1,4 +1,4 @@
-package com.example.yadrotestovoe.domain.usecase
+package com.example.yadrotestovoe.domain.usecase.inter
 
 import com.example.yadrotestovoe.domain.model.Contact
 

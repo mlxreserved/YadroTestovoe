@@ -2,9 +2,11 @@ package com.example.yadrotestovoe.data.contact.local.di
 
 import android.content.ContentResolver
 import android.content.Context
+import com.example.yadrotestovoe.data.contact.local.repository.AidlRepositoryImpl
 import com.example.yadrotestovoe.data.contact.local.repository.ContactLocalRepositoryImpl
 import com.example.yadrotestovoe.data.contact.local.source.ContactContentDataSource
 import com.example.yadrotestovoe.data.contact.local.source.ContactLocalDataSource
+import com.example.yadrotestovoe.domain.repository.AidlRepository
 import com.example.yadrotestovoe.domain.repository.ContactLocalRepository
 import dagger.Module
 import dagger.Provides
@@ -32,4 +34,9 @@ object ContactModule {
     fun provideContactLocalRepository(contactLocalDataSource: ContactLocalDataSource): ContactLocalRepository =
         ContactLocalRepositoryImpl(contactLocalDataSource)
 
+
+    @Provides
+    @Singleton
+    fun provideAidlRepository(@ApplicationContext context: Context): AidlRepository =
+        AidlRepositoryImpl(context)
 }

@@ -1,7 +1,8 @@
-package com.example.yadrotestovoe.domain.usecase
+package com.example.yadrotestovoe.domain.usecase.impl
 
 import com.example.yadrotestovoe.domain.model.Contact
 import com.example.yadrotestovoe.domain.repository.ContactLocalRepository
+import com.example.yadrotestovoe.domain.usecase.inter.GetLocalContactsUseCase
 import javax.inject.Inject
 
 class GetLocalContactsUseCaseImpl @Inject constructor(

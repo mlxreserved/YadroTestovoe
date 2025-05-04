@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class BoundService : Service() {
 
+
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
 

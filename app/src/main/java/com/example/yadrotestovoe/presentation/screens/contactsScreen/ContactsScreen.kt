@@ -14,11 +14,11 @@ import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.
 
 @Composable
 fun ContactsListScreen(
-    deleteDuplicateContacts: DeleteDuplicateContacts?,
     modifier: Modifier = Modifier,
-    contactsViewModel: ContactsViewModel = hiltViewModel()
+    contactsViewModel: ContactsViewModel = hiltViewModel(),
 ) {
     val contactsState by contactsViewModel.contactsState.collectAsState()
+
 
     Box(modifier = modifier) {
          when (val state = contactsState) {
@@ -27,7 +27,6 @@ fun ContactsListScreen(
             ContactsScreenState.Loading -> { LoadingContactsScreen() }
 
             is ContactsScreenState.Success -> SuccessContactsScreen(
-                deleteDuplicateContacts = deleteDuplicateContacts,
                 groupedContacts = state.contacts,
                 contactsViewModel = contactsViewModel
             )
