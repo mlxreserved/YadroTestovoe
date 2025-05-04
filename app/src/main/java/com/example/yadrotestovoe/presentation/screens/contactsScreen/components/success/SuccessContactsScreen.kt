@@ -1,6 +1,12 @@
 package com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success
 
+import android.Manifest.permission.CALL_PHONE
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -17,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.example.yadrotestovoe.R
 import com.example.yadrotestovoe.domain.model.Contact
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsViewModel
@@ -31,13 +39,20 @@ fun SuccessContactsScreen(
     val context = LocalContext.current
     val errorNumber = stringResource(R.string.error_empty_number)
     val errorCallPermission = stringResource(R.string.error_call_permission)
+    val lastSelectedContact = contactsViewModel.lastSelectedContact
 
-    //
+    // Разрешение на звонки
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         // Обработка результата через ViewModel
-        contactsViewModel.handlePermissionResult(context, errorCallPermission, isGranted)
+        handlePermissionResult(
+            contactsViewModel = contactsViewModel,
+            errorCallPermission = errorCallPermission,
+            isGranted = isGranted,
+            lastSelectedContact = lastSelectedContact,
+            context = context
+        )
     }
 
     // Отображение списка контактов
@@ -47,15 +62,17 @@ fun SuccessContactsScreen(
                 ContactFirstLetter(initial = initial)
             }
             items(contactsInGroup) { contact ->
-                Row(verticalAlignment = Alignment.CenterVertically,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 2.dp)
                         .clickable {
-                            contactsViewModel.onContactPressed(
+                            onContactPressed(
+                                contactsViewModel = contactsViewModel,
                                 context = context,
                                 contact = contact,
-                                requestPermissionLauncher,
+                                requestPermissionLauncher = requestPermissionLauncher,
                                 error = errorNumber
                             )
                         }
@@ -66,5 +83,57 @@ fun SuccessContactsScreen(
                 }
             }
         }
+    }
+}
+
+
+// Создание намерения и запуск звонка
+private fun startCall(context: Context, phoneNumber: String) {
+    val callIntent = Intent(Intent.ACTION_CALL).apply {
+        data = ("tel:$phoneNumber").toUri()
+    }
+    context.startActivity(callIntent)
+}
+
+private fun handlePermissionResult(
+    contactsViewModel: ContactsViewModel,
+    errorCallPermission: String,
+    isGranted: Boolean,
+    lastSelectedContact: Contact?,
+    context: Context
+) {
+    if (isGranted && lastSelectedContact?.phoneNumber != null) {
+        startCall(context, lastSelectedContact.phoneNumber)
+        contactsViewModel.setLastSelectedContact(null)
+    } else if (!isGranted) {
+        Toast.makeText(context, errorCallPermission, Toast.LENGTH_SHORT).show()
+    }
+}
+
+// Реакция на нажатие кнопки
+fun onContactPressed(
+    contactsViewModel: ContactsViewModel,
+    context: Context,
+    contact: Contact,
+    requestPermissionLauncher: ActivityResultLauncher<String>,
+    error: String
+) {
+    contactsViewModel.setLastSelectedContact(contact)
+
+    // Если номер не пустой, то запрашиваем разрешение на звонок
+    if (contact.phoneNumber != null) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Разрешение есть — звоним
+            startCall(context, contact.phoneNumber)
+        } else {
+            // Нет разрешения — запрашиваем
+            requestPermissionLauncher.launch(CALL_PHONE)
+        }
+    } else {
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     }
 }

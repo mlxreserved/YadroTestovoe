@@ -1,13 +1,5 @@
 package com.example.yadrotestovoe.presentation.screens.contactsScreen
 
-import android.Manifest.permission.CALL_PHONE
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yadrotestovoe.domain.model.Contact
@@ -31,7 +23,8 @@ class ContactsViewModel @Inject constructor(
     // Доступное к чтению состояние приложения
     val contactsState: StateFlow<ContactsScreenState> = _contactsState.asStateFlow()
 
-    private var lastSelectedContact: Contact? = null
+    var lastSelectedContact: Contact? = null
+        private set
 
     init {
         loadContacts()
@@ -63,51 +56,8 @@ class ContactsViewModel @Inject constructor(
         }
     }
 
-    // Реакция на нажатие кнопки
-    fun onContactPressed(
-        context: Context,
-        contact: Contact,
-        requestPermissionLauncher: ActivityResultLauncher<String>,
-        error: String
-    ) {
+    fun setLastSelectedContact(contact: Contact?) {
         lastSelectedContact = contact
-
-        // Если номер не пустой, то запрашиваем разрешение на звонок
-        if (contact.phoneNumber != null) {
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    CALL_PHONE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                // Разрешение есть — звоним
-                startCall(context, contact.phoneNumber)
-            } else {
-                // Нет разрешения — запрашиваем
-                requestPermissionLauncher.launch(CALL_PHONE)
-            }
-        } else {
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    // Обработка результата запроса разрешения
-    fun handlePermissionResult(context: Context, error: String, isGranted: Boolean) {
-        if (isGranted && lastSelectedContact?.phoneNumber != null) {
-            startCall(context, lastSelectedContact!!.phoneNumber!!)
-            lastSelectedContact = null
-        } else if(!isGranted) {
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    // Создание намерения и запуск звонка
-    private fun startCall(context: Context, phoneNumber: String) {
-        val callIntent = Intent(Intent.ACTION_CALL).apply {
-            data = ("tel:$phoneNumber").toUri()
-        }
-        context.startActivity(callIntent)
     }
 
     companion object {
