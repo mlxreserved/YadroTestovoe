@@ -13,6 +13,9 @@ ksp = "2.0.21-1.0.27"
 hilt = "2.51.1"
 hiltNavigationComposeVersion = "1.2.0"
 coil = "3.0.0"
+appcompat = "1.6.1"
+material = "1.10.0"
+parcelize = "2.0.21"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +41,8 @@ google-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", ve
 #Coil
 io-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 io-coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -49,3 +54,7 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 #Hilt
 google-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+#Parcelize
+jetbrains-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }

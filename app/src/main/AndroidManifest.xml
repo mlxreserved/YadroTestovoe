@@ -33,4 +33,9 @@
         </activity>
     </application>
 
+    <queries>
+        <intent>
+            <action android:name="com.example.aidl.REMOTE_CONNECTION" />
+        </intent>
+    </queries>
 </manifest>

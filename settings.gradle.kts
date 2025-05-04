@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "YadroTestovoe"
 include(":app")
- 
+include(":app-server")
+include(":aidl")

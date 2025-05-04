@@ -2,16 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.ksp)
-    alias(libs.plugins.google.hilt)
 }
 
 android {
-    namespace = "com.example.yadrotestovoe"
+    namespace = "com.example.app_server"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.yadrotestovoe"
+        applicationId = "com.example.app_server"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -30,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -43,15 +41,6 @@ android {
 
 dependencies {
     implementation(project(":aidl"))
-
-    // Hilt
-    implementation(libs.google.hilt.android)
-    ksp(libs.google.hilt.compiler)
-    implementation(libs.google.hilt.navigation.compose)
-
-    //Coil
-    implementation(libs.io.coil.compose)
-    implementation(libs.io.coil.network)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
