@@ -23,8 +23,11 @@ class ContactsViewModel @Inject constructor(
     // Доступное к чтению состояние приложения
     val contactsState: StateFlow<ContactsScreenState> = _contactsState.asStateFlow()
 
-    var lastSelectedContact: Contact? = null
-        private set
+    // Инкапсуляция состояния последнего выбранного контакта
+    private val _lastSelectedContact: MutableStateFlow<Contact?> =
+        MutableStateFlow(null)
+    // Доступное для чтения состояние последнего контакта
+    val lastSelectedContact: StateFlow<Contact?> = _lastSelectedContact.asStateFlow()
 
     init {
         loadContacts()
@@ -57,7 +60,7 @@ class ContactsViewModel @Inject constructor(
     }
 
     fun setLastSelectedContact(contact: Contact?) {
-        lastSelectedContact = contact
+        _lastSelectedContact.update { contact }
     }
 
     companion object {

@@ -4,6 +4,7 @@ import android.Manifest.permission.CALL_PHONE
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,20 +42,18 @@ fun SuccessContactsScreen(
     val context = LocalContext.current
     val errorNumber = stringResource(R.string.error_empty_number)
     val errorCallPermission = stringResource(R.string.error_call_permission)
-    val lastSelectedContact = contactsViewModel.lastSelectedContact
+    val lastSelectedContact by contactsViewModel.lastSelectedContact.collectAsState()
 
     // Разрешение на звонки
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // Обработка результата через ViewModel
-        handlePermissionResult(
-            contactsViewModel = contactsViewModel,
-            errorCallPermission = errorCallPermission,
-            isGranted = isGranted,
-            lastSelectedContact = lastSelectedContact,
-            context = context
-        )
+        if (isGranted && lastSelectedContact?.phoneNumber != null) {
+            startCall(context, lastSelectedContact?.phoneNumber ?: "")
+            contactsViewModel.setLastSelectedContact(null)
+        } else if (!isGranted) {
+            Toast.makeText(context, errorCallPermission, Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Отображение списка контактов
@@ -95,21 +96,6 @@ private fun startCall(context: Context, phoneNumber: String) {
     context.startActivity(callIntent)
 }
 
-private fun handlePermissionResult(
-    contactsViewModel: ContactsViewModel,
-    errorCallPermission: String,
-    isGranted: Boolean,
-    lastSelectedContact: Contact?,
-    context: Context
-) {
-    if (isGranted && lastSelectedContact?.phoneNumber != null) {
-        startCall(context, lastSelectedContact.phoneNumber)
-        contactsViewModel.setLastSelectedContact(null)
-    } else if (!isGranted) {
-        Toast.makeText(context, errorCallPermission, Toast.LENGTH_SHORT).show()
-    }
-}
-
 // Реакция на нажатие кнопки
 fun onContactPressed(
     contactsViewModel: ContactsViewModel,
@@ -119,6 +105,7 @@ fun onContactPressed(
     error: String
 ) {
     contactsViewModel.setLastSelectedContact(contact)
+    Log.d("Permissions", contact.phoneNumber.toString())
 
     // Если номер не пустой, то запрашиваем разрешение на звонок
     if (contact.phoneNumber != null) {
@@ -129,6 +116,7 @@ fun onContactPressed(
         ) {
             // Разрешение есть — звоним
             startCall(context, contact.phoneNumber)
+            contactsViewModel.setLastSelectedContact(null)
         } else {
             // Нет разрешения — запрашиваем
             requestPermissionLauncher.launch(CALL_PHONE)
