@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Проверка и запрос разрешения на съемку
+        // Проверка и запрос разрешения на чтение контактов
         checkAndRequestContactPermission()
     }
 
