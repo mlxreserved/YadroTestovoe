@@ -12,11 +12,13 @@ import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success.SuccessContactsScreen
 import com.example.yadrotestovoe.presentation.viewModel.ContactsViewModel
 import com.example.yadrotestovoe.presentation.state.ContactsScreenState
+import com.example.yadrotestovoe.presentation.viewModel.DuplicatesViewModel
 
 @Composable
 fun ContactsListScreen(
     modifier: Modifier = Modifier,
     contactsViewModel: ContactsViewModel = hiltViewModel(),
+    duplicatesViewModel: DuplicatesViewModel = hiltViewModel()
 ) {
     val contactsState by contactsViewModel.contactsState.collectAsState()
 
@@ -27,10 +29,14 @@ fun ContactsListScreen(
             is ContactsScreenState.Error -> { ErrorContactsScreen() }
             ContactsScreenState.Loading -> { LoadingContactsScreen() }
 
-            is ContactsScreenState.Success -> SuccessContactsScreen(
-                groupedContacts = state.contacts,
-                contactsViewModel = contactsViewModel
-            )
+            is ContactsScreenState.Success -> {
+                duplicatesViewModel.bindService()
+                SuccessContactsScreen(
+                    groupedContacts = state.contacts,
+                    contactsViewModel = contactsViewModel,
+                    duplicatesViewModel = duplicatesViewModel
+                )
+            }
         }
     }
 

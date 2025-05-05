@@ -39,7 +39,7 @@ class ContactsViewModel @Inject constructor(
     }
 
     // Загрузка контактов
-    private fun loadContacts() {
+    fun loadContacts() {
         viewModelScope.launch {
             _contactsState.update { ContactsScreenState.Loading }
             try {

@@ -1,14 +1,8 @@
 package com.example.yadrotestovoe.presentation
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import com.example.aidl.DeleteDuplicateContacts
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsListScreen
 import com.example.yadrotestovoe.presentation.ui.theme.YadroTestovoeTheme
 import com.example.yadrotestovoe.R

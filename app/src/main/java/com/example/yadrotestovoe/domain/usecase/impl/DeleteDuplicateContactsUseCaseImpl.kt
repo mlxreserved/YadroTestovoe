@@ -7,6 +7,6 @@ import javax.inject.Inject
 class DeleteDuplicateContactsUseCaseImpl @Inject constructor(private val aidlRepository: AidlRepository) :
     DeleteDuplicateContactsUseCase {
 
-    override suspend operator fun invoke(): Result<String> = aidlRepository.deleteDuplicateContacts()
+    override suspend operator fun invoke(): Result<Int> = aidlRepository.deleteDuplicateContacts()
 
 }

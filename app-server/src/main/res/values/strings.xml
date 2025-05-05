@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">app-server</string>
+    <string name="error_contacts_permissions">Нет прав доступа к контактам</string>
+    <string name="success_contacts_permissions">Права удачно получены. Можно закрыть это приложение.</string>
 </resources>

@@ -58,16 +58,16 @@ class AidlRepositoryImpl(private val context: Context) : AidlRepository {
         }
     }
 
-    override suspend fun deleteDuplicateContacts(): Result<String> {
-        val deferred = CompletableDeferred<Result<String>>()
+    override suspend fun deleteDuplicateContacts(): Result<Int> {
+        val deferred = CompletableDeferred<Result<Int>>()
 
         deleteDuplicateContacts?.deleteDuplicateContacts(object : AsyncCallback.Stub() {
-            override fun onSuccess(successMessage: String?) {
-                deferred.complete(Result.success(successMessage ?: "Success"))
+            override fun onSuccess(successMessage: Int) {
+                deferred.complete(Result.success(successMessage))
             }
 
-            override fun onEmpty(emptyMessage: String?) {
-                deferred.complete(Result.success(emptyMessage ?: "No duplicates"))
+            override fun onEmpty(emptyMessage: Int) {
+                deferred.complete(Result.success(emptyMessage))
             }
 
             override fun onError(customAidlException: CustomAidlException?) {

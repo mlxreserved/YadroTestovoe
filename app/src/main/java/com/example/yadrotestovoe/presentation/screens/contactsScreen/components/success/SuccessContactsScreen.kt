@@ -1,5 +1,6 @@
 package com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -26,13 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yadrotestovoe.R
 import com.example.yadrotestovoe.domain.model.Contact
+import com.example.yadrotestovoe.presentation.state.DuplicateState
 import com.example.yadrotestovoe.presentation.viewModel.ContactsViewModel
 import com.example.yadrotestovoe.presentation.viewModel.DuplicatesViewModel
 
 
 @Composable
 fun SuccessContactsScreen(
-    duplicatesViewModel: DuplicatesViewModel = hiltViewModel(),
+    duplicatesViewModel: DuplicatesViewModel,
     groupedContacts: Map<Char, List<Contact>>,
     contactsViewModel: ContactsViewModel,
     modifier: Modifier = Modifier
@@ -42,7 +44,6 @@ fun SuccessContactsScreen(
     val errorCallPermission = stringResource(R.string.error_call_permission)
     val deleteStatus by duplicatesViewModel.deleteStatus.collectAsState()
 
-
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -50,7 +51,24 @@ fun SuccessContactsScreen(
         contactsViewModel.handlePermissionResult(context, errorCallPermission, isGranted)
     }
 
+    when(deleteStatus) {
+        is DuplicateState.Success -> {
+            Toast.makeText(context, stringResource(R.string.success_delete_duplicate), Toast.LENGTH_SHORT).show()
+            contactsViewModel.loadContacts()
+            duplicatesViewModel.clearDeleteStatus()
+        }
+        is DuplicateState.Empty -> {
+            Toast.makeText(context, stringResource(R.string.empty_delete_duplicate), Toast.LENGTH_SHORT).show()
+            duplicatesViewModel.clearDeleteStatus()
+        }
+        is DuplicateState.Error -> {
+            Toast.makeText(context, stringResource(R.string.error_delete_duplicate), Toast.LENGTH_SHORT).show()
+            duplicatesViewModel.clearDeleteStatus()
+        }
+    }
+
     Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ){
         // Отображение списка контактов
@@ -86,8 +104,7 @@ fun SuccessContactsScreen(
         Button(
             onClick = { duplicatesViewModel.deleteDuplicates() }
         ){
-            Text(text = "Click me")
+            Text(text = stringResource(R.string.button_delete_duplicate))
         }
-        Text(text = deleteStatus ?: "Ничего не произошло")
     }
 }

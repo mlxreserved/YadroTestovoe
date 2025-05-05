@@ -7,4 +7,8 @@
     <string name="error_contacts_permission">Для работы с приложением нужен доступ к контактам</string>
     <string name="error_load_contacts">Произошла ошибка при загрузке контактов</string>
     <string name="empty_notify">У вас нет контактов для отображения.</string>
+    <string name="empty_delete_duplicate">Ни один контакт не был удален</string>
+    <string name="error_delete_duplicate">Ошибка удаления дубликата</string>
+    <string name="success_delete_duplicate">Дубликаты успешно удалены</string>
+    <string name="button_delete_duplicate">Удалить повторяющиеся контакты</string>
 </resources>
