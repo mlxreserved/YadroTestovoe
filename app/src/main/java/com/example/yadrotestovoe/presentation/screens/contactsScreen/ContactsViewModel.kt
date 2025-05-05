@@ -3,7 +3,7 @@ package com.example.yadrotestovoe.presentation.screens.contactsScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yadrotestovoe.domain.model.Contact
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCase
+import com.example.yadrotestovoe.domain.usecase.GetGroupedContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactsViewModel @Inject constructor(
-    private val getLocalContactsUseCase: GetLocalContactsUseCase
+    private val getGroupedContactsUseCase: GetGroupedContactsUseCase
 ) : ViewModel() {
 
     // Инкапсуляция состояния приложения
@@ -22,12 +22,6 @@ class ContactsViewModel @Inject constructor(
         MutableStateFlow(ContactsScreenState.Loading)
     // Доступное к чтению состояние приложения
     val contactsState: StateFlow<ContactsScreenState> = _contactsState.asStateFlow()
-
-    // Инкапсуляция состояния последнего выбранного контакта
-    private val _lastSelectedContact: MutableStateFlow<Contact?> =
-        MutableStateFlow(null)
-    // Доступное для чтения состояние последнего контакта
-    val lastSelectedContact: StateFlow<Contact?> = _lastSelectedContact.asStateFlow()
 
     init {
         loadContacts()
@@ -38,21 +32,21 @@ class ContactsViewModel @Inject constructor(
         viewModelScope.launch {
             _contactsState.update { ContactsScreenState.Loading }
             try {
-                val localContacts = getLocalContactsUseCase()
+                val localContacts = getGroupedContactsUseCase.getGroupedContacts()
 
                 if (localContacts.isEmpty()) {
                     _contactsState.update { ContactsScreenState.Empty }
                 } else {
-                    val groupedContacts: Map<Char, List<Contact>> = localContacts
-                        .groupBy { it.name?.firstOrNull()?.uppercaseChar() ?: SIGN_UNNAMED_CONTACT }
-                        .toSortedMap()
-                    _contactsState.update { ContactsScreenState.Success(groupedContacts) }
+                    _contactsState.update { ContactsScreenState.Success(
+                        contacts = localContacts,
+                        lastSelectedContact = null
+                    ) }
                 }
 
             } catch (e: Exception) {
                 _contactsState.update {
                     ContactsScreenState.Error(
-                        e.message ?: UNKNOWN_ERROR
+                        e.message ?: ""
                     )
                 }
             }
@@ -60,14 +54,11 @@ class ContactsViewModel @Inject constructor(
     }
 
     fun setLastSelectedContact(contact: Contact?) {
-        _lastSelectedContact.update { contact }
-    }
-
-    companion object {
-        // Константа для неизвестной ошибки
-        private const val UNKNOWN_ERROR = "Неизвестная ошибка"
-        // Константа знака для контактов, у которых нет имени
-        private const val SIGN_UNNAMED_CONTACT = '#'
+        _contactsState.update { old ->
+            (old as? ContactsScreenState.Success)?.copy(
+                lastSelectedContact = contact
+            ) ?: old
+        }
     }
 
 }

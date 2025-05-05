@@ -25,7 +25,7 @@ fun ContactsListScreen(
             ContactsScreenState.Loading -> { LoadingContactsScreen() }
 
             is ContactsScreenState.Success -> SuccessContactsScreen(
-                groupedContacts = state.contacts,
+                state = state,
                 contactsViewModel = contactsViewModel
             )
         }

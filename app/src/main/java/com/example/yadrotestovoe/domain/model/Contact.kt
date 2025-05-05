@@ -14,5 +14,5 @@ data class Contact (
     val name: String?,
     val phoneNumber: String?,
     val thumbnailUri: String?,
-    val phoneType: Int?
+    val phoneType: String?
 )

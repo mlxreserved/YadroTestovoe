@@ -10,7 +10,10 @@ import com.example.yadrotestovoe.domain.model.Contact
     Error - произошла ошибка при получении контактов
  */
 sealed interface ContactsScreenState {
-    data class Success(val contacts: Map<Char, List<Contact>>) : ContactsScreenState
+    data class Success(
+        val contacts: Map<Char, List<Contact>>,
+        val lastSelectedContact: Contact?
+    ) : ContactsScreenState
     data object Loading: ContactsScreenState
     data object Empty: ContactsScreenState
     data class Error(val errorMessage: String) : ContactsScreenState

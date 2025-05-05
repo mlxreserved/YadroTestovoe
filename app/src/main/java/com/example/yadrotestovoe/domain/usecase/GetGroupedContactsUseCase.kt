@@ -2,9 +2,9 @@ package com.example.yadrotestovoe.domain.usecase
 
 import com.example.yadrotestovoe.domain.model.Contact
 
-interface GetLocalContactsUseCase {
+interface GetGroupedContactsUseCase {
 
     // Выполнение use case для получения контактов
-    suspend operator fun invoke(): List<Contact>
+    suspend fun getGroupedContacts(): Map<Char, List<Contact>>
 
 }

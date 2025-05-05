@@ -1,7 +1,7 @@
 package com.example.yadrotestovoe.domain.di
 
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCase
-import com.example.yadrotestovoe.domain.usecase.GetLocalContactsUseCaseImpl
+import com.example.yadrotestovoe.domain.usecase.GetGroupedContactsUseCase
+import com.example.yadrotestovoe.domain.usecase.GetGroupedContactsInteractor
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,8 +14,8 @@ abstract class UseCaseModule {
 
     @Binds
     @Singleton
-    abstract fun bindGetLocalContacts(
-        impl: GetLocalContactsUseCaseImpl
-    ): GetLocalContactsUseCase
+    abstract fun bindGetGroupedContacts(
+        interactor: GetGroupedContactsInteractor
+    ): GetGroupedContactsUseCase
 
 }

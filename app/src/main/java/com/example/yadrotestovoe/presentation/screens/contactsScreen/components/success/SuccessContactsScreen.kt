@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,26 +28,28 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.yadrotestovoe.R
 import com.example.yadrotestovoe.domain.model.Contact
+import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsScreenState
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsViewModel
 
 
 @Composable
 fun SuccessContactsScreen(
-    groupedContacts: Map<Char, List<Contact>>,
+    state: ContactsScreenState.Success,
     contactsViewModel: ContactsViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val errorNumber = stringResource(R.string.error_empty_number)
     val errorCallPermission = stringResource(R.string.error_call_permission)
-    val lastSelectedContact by contactsViewModel.lastSelectedContact.collectAsState()
+    val groupedContacts = state.contacts
+    val lastPhoneNumber = state.lastSelectedContact?.phoneNumber
 
     // Разрешение на звонки
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted && lastSelectedContact?.phoneNumber != null) {
-            startCall(context, lastSelectedContact?.phoneNumber ?: "")
+        if (isGranted && lastPhoneNumber != null) {
+            startCall(context, lastPhoneNumber)
             contactsViewModel.setLastSelectedContact(null)
         } else if (!isGranted) {
             Toast.makeText(context, errorCallPermission, Toast.LENGTH_SHORT).show()
@@ -80,7 +80,7 @@ fun SuccessContactsScreen(
                         .border(BorderStroke(1.dp, Color.Blue))
                 ) {
                     ContactThumbnail(thumbnailUri = contact.thumbnailUri)
-                    ContactInfo(context = context, contact = contact)
+                    ContactInfo(contact = contact)
                 }
             }
         }

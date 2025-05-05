@@ -12,6 +12,6 @@ data class ContactLocal(
     val id: Long,
     val name: String?,
     val phoneNumber: String?,
-    val phoneType: Int?,
+    val phoneType: String?,
     val thumbnailUri: String?, // Иконка пользователя
 )

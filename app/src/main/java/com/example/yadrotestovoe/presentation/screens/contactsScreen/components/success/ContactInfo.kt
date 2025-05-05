@@ -1,7 +1,5 @@
 package com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success
 
-import android.content.Context
-import android.provider.ContactsContract
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,25 +15,11 @@ import com.example.yadrotestovoe.domain.model.Contact
 
 @Composable
 fun ContactInfo(
-    context: Context,
     contact: Contact
 ) {
-    /*
-        Преобразование типа номера в читабельный вид, например:
-        1 - Домашний
-        2 - Мобильный
-        3 - Рабочий
-        и т.д.
-     */
-    val typeLabel = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
-        context.resources,
-        contact.phoneType ?: 0,
-        ""
-    ).toString()
-
     // Приводим номер и тип номера в удобный формат
     val phoneNumberWithLabel =
-        if (contact.phoneNumber != null) "${contact.phoneNumber} ($typeLabel)" else stringResource(R.string.empty_number)
+        if (contact.phoneNumber != null) "${contact.phoneNumber} (${contact.phoneType})" else null
 
     Column {
         Text(
@@ -47,7 +31,7 @@ fun ContactInfo(
         )
         Row {
             Text(
-                text = phoneNumberWithLabel,
+                text = phoneNumberWithLabel ?: stringResource(R.string.empty_number),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
