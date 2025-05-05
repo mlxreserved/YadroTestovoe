@@ -21,3 +21,9 @@
 - **UI**: Jetpack Compose
 - **Permissions**: READ_CONTACTS, CALL_PHONE
 - **IDE**: Android Studio
+
+
+## **Установка**
+- Установить на устройство app-server
+- Зайти в него, чтобы выдать права
+- Установить клиентское приложение
