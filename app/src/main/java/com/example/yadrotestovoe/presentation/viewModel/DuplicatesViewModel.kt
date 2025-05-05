@@ -35,11 +35,15 @@ class DuplicatesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = deleteDuplicateContactsUseCase()
-                val resultCode = result.getOrDefault(0)
-                if(resultCode == 0){
-                    _deleteStatus.update { DuplicateState.Empty(resultCode) }
+                if(result.isSuccess) {
+                    val resultCode = result.getOrDefault(0)
+                    if (resultCode == 0) {
+                        _deleteStatus.update { DuplicateState.Empty(resultCode) }
+                    } else {
+                        _deleteStatus.update { DuplicateState.Success(resultCode) }
+                    }
                 } else {
-                    _deleteStatus.update { DuplicateState.Success(resultCode) }
+                    _deleteStatus.update { DuplicateState.Error(result.exceptionOrNull()?.message) }
                 }
             } catch (e: Exception) {
                 _deleteStatus.update { DuplicateState.Error(e.message) }

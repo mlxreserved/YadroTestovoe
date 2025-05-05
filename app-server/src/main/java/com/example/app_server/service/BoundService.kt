@@ -1,8 +1,10 @@
 package com.example.app_server.service
 
+import android.Manifest
 import android.app.Service
 import android.content.ContentResolver
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.IBinder
 import android.provider.ContactsContract
@@ -26,12 +28,15 @@ class BoundService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return object : DeleteDuplicateContacts.Stub() {
             override fun deleteDuplicateContacts(callback: AsyncCallback?) {
+
                 serviceScope.launch {
                     try {
+                        checkPermissions()
+
                         val result = performDeleteDuplicates()
                         // Вернуться в main-поток, чтобы безопасно вызвать callback
                         withContext(Dispatchers.Main) {
-                            if(result == 0){
+                            if (result == 0) {
                                 callback?.onEmpty(result)
                             }
                             callback?.onSuccess(result)
@@ -52,6 +57,15 @@ class BoundService : Service() {
         serviceJob.cancel() // Отменяем все запущенные корутины при уничтожении сервиса
     }
 
+    private fun checkPermissions() {
+        val readPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS)
+        val writePermission = checkSelfPermission(Manifest.permission.WRITE_CONTACTS)
+
+        if (readPermission != PackageManager.PERMISSION_GRANTED || writePermission != PackageManager.PERMISSION_GRANTED) {
+            throw SecurityException("Missing required permissions: READ_CONTACTS and/or WRITE_CONTACTS")
+        }
+    }
+
     // Симуляция тяжёлой операции
     private fun performDeleteDuplicates(): Int {
         val contentResolver = applicationContext.contentResolver
@@ -69,10 +83,11 @@ class BoundService : Service() {
                 contact.company?.takeIf { it.isNotBlank() }
             ).size
             // Собираем номера и типы, сортируем по типу и номеру
-            val phoneNumbersWithTypes = contact.phoneNumbers?.sortedWith(compareBy({ it.type }, { it.number }))
-                ?.joinToString(separator = "|") { phone ->
-                    "${phone.number}|${phone.type}"
-                } ?: ""
+            val phoneNumbersWithTypes =
+                contact.phoneNumbers?.sortedWith(compareBy({ it.type }, { it.number }))
+                    ?.joinToString(separator = "|") { phone ->
+                        "${phone.number}|${phone.type}"
+                    } ?: ""
 
             val sortedEmails = contact.emails?.sorted()?.joinToString("|") ?: 0
 
@@ -119,15 +134,20 @@ class BoundService : Service() {
         cursor?.use {
             while (it.moveToNext()) {
                 val id = it.getLong(it.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-                val lookupKey = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY))
-                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-                val thumbnailUri = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
-                val company = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.COMPANY))
+                val lookupKey =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY))
+                val name =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+                val thumbnailUri =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+                val company =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.COMPANY))
                 val phoneNumbers = mutableListOf<Phone>()
                 val emails = mutableListOf<String>()
 
                 // Получаем все номера телефонов
-                val hasPhone = it.getInt(it.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER))
+                val hasPhone =
+                    it.getInt(it.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER))
                 if (hasPhone > 0) {
                     val phoneCursor = contentResolver.query(
                         ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -141,8 +161,10 @@ class BoundService : Service() {
                     )
                     phoneCursor?.use { pCursor ->
                         while (pCursor.moveToNext()) {
-                            val number = pCursor.getString(pCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                            val type = pCursor.getInt(pCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE))
+                            val number =
+                                pCursor.getString(pCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                            val type =
+                                pCursor.getInt(pCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE))
                             phoneNumbers.add(Phone(number, type))
                         }
                     }
@@ -158,7 +180,8 @@ class BoundService : Service() {
                 )
                 emailCursor?.use { eCursor ->
                     while (eCursor.moveToNext()) {
-                        val email = eCursor.getString(eCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS))
+                        val email =
+                            eCursor.getString(eCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS))
                         emails.add(email)
                     }
                 }
