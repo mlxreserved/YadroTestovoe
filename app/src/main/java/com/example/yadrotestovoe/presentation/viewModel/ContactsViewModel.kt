@@ -1,4 +1,4 @@
-package com.example.yadrotestovoe.presentation.screens.contactsScreen
+package com.example.yadrotestovoe.presentation.viewModel
 
 import android.Manifest.permission.CALL_PHONE
 import android.content.Context
@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yadrotestovoe.domain.model.Contact
 import com.example.yadrotestovoe.domain.usecase.inter.GetLocalContactsUseCase
+import com.example.yadrotestovoe.presentation.state.ContactsScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

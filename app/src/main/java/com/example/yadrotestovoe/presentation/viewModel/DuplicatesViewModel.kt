@@ -1,7 +1,5 @@
-package com.example.yadrotestovoe.presentation.screens.contactsScreen
+package com.example.yadrotestovoe.presentation.viewModel
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yadrotestovoe.domain.usecase.inter.BindServiceUseCase
@@ -23,18 +21,28 @@ class DuplicatesViewModel @Inject constructor(
 ): ViewModel() {
 
     private val _deleteStatus = MutableStateFlow<String?>(null)
+    val deleteStatus: StateFlow<String?> = _deleteStatus.asStateFlow()
 
-    fun deleteDuplicates(context: Context) {
+    init {
+        viewModelScope.launch {
+            bindServiceUseCase()
+        }
+    }
+
+    fun deleteDuplicates() {
         viewModelScope.launch {
             try {
                 val result = deleteDuplicateContactsUseCase()
                 val resultString = result.getOrNull()
                 _deleteStatus.update { resultString }
-                Toast.makeText(context, _deleteStatus, )
             } catch (e: Exception) {
                 _deleteStatus.update { "Error deleting duplicates" }
             }
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        unbindServiceUseCase()
+    }
 }

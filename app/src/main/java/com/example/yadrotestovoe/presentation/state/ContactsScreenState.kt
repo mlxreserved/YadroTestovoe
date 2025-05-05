@@ -1,4 +1,4 @@
-package com.example.yadrotestovoe.presentation.screens.contactsScreen
+package com.example.yadrotestovoe.presentation.state
 
 import com.example.yadrotestovoe.domain.model.Contact
 

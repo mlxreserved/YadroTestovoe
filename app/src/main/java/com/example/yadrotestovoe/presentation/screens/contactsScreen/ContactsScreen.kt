@@ -6,11 +6,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.aidl.DeleteDuplicateContacts
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.empty.EmptyContactsScreen
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.error.ErrorContactsScreen
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.loading.LoadingContactsScreen
 import com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success.SuccessContactsScreen
+import com.example.yadrotestovoe.presentation.viewModel.ContactsViewModel
+import com.example.yadrotestovoe.presentation.state.ContactsScreenState
 
 @Composable
 fun ContactsListScreen(

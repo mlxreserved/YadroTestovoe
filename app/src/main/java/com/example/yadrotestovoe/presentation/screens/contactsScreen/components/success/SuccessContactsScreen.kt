@@ -1,8 +1,5 @@
 package com.example.yadrotestovoe.presentation.screens.contactsScreen.components.success
 
-import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -10,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,14 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.dropUnlessResumed
-import com.example.aidl.AsyncCallback
-import com.example.aidl.CustomAidlException
-import com.example.aidl.DeleteDuplicateContacts
 import com.example.yadrotestovoe.R
 import com.example.yadrotestovoe.domain.model.Contact
-import com.example.yadrotestovoe.presentation.screens.contactsScreen.ContactsViewModel
-import com.example.yadrotestovoe.presentation.screens.contactsScreen.DuplicatesViewModel
+import com.example.yadrotestovoe.presentation.viewModel.ContactsViewModel
+import com.example.yadrotestovoe.presentation.viewModel.DuplicatesViewModel
 
 
 @Composable
@@ -47,6 +40,8 @@ fun SuccessContactsScreen(
     val context = LocalContext.current
     val errorNumber = stringResource(R.string.error_empty_number)
     val errorCallPermission = stringResource(R.string.error_call_permission)
+    val deleteStatus by duplicatesViewModel.deleteStatus.collectAsState()
+
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -55,9 +50,14 @@ fun SuccessContactsScreen(
         contactsViewModel.handlePermissionResult(context, errorCallPermission, isGranted)
     }
 
-    Column {
+    Column (
+        modifier = Modifier.fillMaxSize()
+    ){
         // Отображение списка контактов
-        LazyColumn {
+        LazyColumn (
+            modifier = Modifier
+                .weight(1f)
+        ) {
             groupedContacts.forEach { (initial, contactsInGroup) ->
                 item {
                     ContactFirstLetter(initial = initial)
@@ -88,5 +88,6 @@ fun SuccessContactsScreen(
         ){
             Text(text = "Click me")
         }
+        Text(text = deleteStatus ?: "Ничего не произошло")
     }
 }
